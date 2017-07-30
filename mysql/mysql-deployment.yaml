@@ -1,0 +1,50 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: mysql-cloudzone
+  namespace: test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      mysql: mysql-cloudzone
+  template:
+    metadata:
+      labels:
+        mysql: mysql-cloudzone
+    spec:
+      containers:
+      - name: mysql-cloudzone
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: mysql-storage
+        image: 10.122.1.100:5000/mysql:5.7
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "root"
+        volumeMounts:
+        - name: mysql-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-storage
+        persistentVolumeClaim:
+          claimName: mysql-pvc
+---
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    app: mysql-cloudzone-server
+  name: mysql-cloudzone-server
+  namespace: test
+spec:
+  ports:
+  - port: 3306
+    targetPort: 3306
+    nodePort: 30007
+  type: NodePort
+  selector:
+    mysql: mysql-cloudzone
