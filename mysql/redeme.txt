@@ -1,0 +1,9 @@
+重点参数说明：
+	mysql-deployment.yaml
+		args: ['--ignore-db-dir=lost+found'] -- 为了解决data目录不是空目录的问题，如果data目录有文件不添加该参数会出现以下问题：
+		https://github.com/docker-library/mysql/issues/252
+		2017-08-01T08:33:16.089803Z 0 [ERROR] --initialize specified but the data directory has files in it. Aborting.
+		2017-08-01T08:33:16.089856Z 0 [ERROR] Aborting
+	
+	image: 10.122.1.100:5000/mysql:5.7 	-- 本地docker registry
+	imagePullPolicy: IfNotPresent		-- docker中没有指定image是才去docker registry下载
